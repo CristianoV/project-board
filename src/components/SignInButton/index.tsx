@@ -1,31 +1,32 @@
 import style from './styles.module.scss';
 import { FaGithub } from 'react-icons/fa';
 import { FiX } from 'react-icons/fi';
-import Image from 'next/image';
+
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 export function SignInButton() {
-  const isUserLoggedIn = true;
+  const { data, status } = useSession();
 
-  return isUserLoggedIn ? (
+  return data ? (
     <button
       type='button'
       className={style.signInButton}
-      onClick={() => console.log('Sign in')}
+      onClick={() => signOut()}
     >
       <img
-        src='https://avatars.githubusercontent.com/u/12345678?v=4'
+        src={data.user.image}
         alt='Avatar'
         width={32}
         height={32}
       />
-      Olá, <strong>Nome do usuário</strong>
+      Olá {data.user.name}
       <FiX color='#737380' className={style.closeIcon} />
     </button>
   ) : (
     <button
       type='button'
       className={style.signInButton}
-      onClick={() => console.log('Sign in')}
+      onClick={() => signIn('github')}
     >
       <FaGithub color='#FFB800' />
       Entrar com github

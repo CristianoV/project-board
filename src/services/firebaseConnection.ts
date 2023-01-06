@@ -1,7 +1,21 @@
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import firebase from 'firebase/app';
 import { initializeApp } from 'firebase/app';
 import 'firebase/firestore';
-import { addDoc, collection, getFirestore } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,

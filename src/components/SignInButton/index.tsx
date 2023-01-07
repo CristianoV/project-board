@@ -3,9 +3,22 @@ import { FaGithub } from 'react-icons/fa';
 import { FiX } from 'react-icons/fi';
 
 import { signIn, signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
+
+interface DataSession {
+  expires: string;
+  id: string;
+  lastDate: string | Date;
+  vip: boolean;
+  user: {
+    email: string;
+    image: string;
+    name: string;
+  };
+}
 
 export function SignInButton() {
-  const { data, status } = useSession();
+  const { data } = useSession() as unknown as { data: DataSession };
 
   return data ? (
     <button
@@ -13,12 +26,7 @@ export function SignInButton() {
       className={style.signInButton}
       onClick={() => signOut()}
     >
-      <img
-        src={data.user.image}
-        alt='Avatar'
-        width={32}
-        height={32}
-      />
+      <Image src={data.user.image} alt='Avatar' width={35} height={35} />
       Olá {data.user.name}
       <FiX color='#737380' className={style.closeIcon} />
     </button>

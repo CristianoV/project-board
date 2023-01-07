@@ -82,26 +82,23 @@ export default function Board({ user, data }: BoardProps) {
     };
 
     const path = 'tasks';
+    try {
+      const addTask = (await add(path, data)) as { id: string };
 
-    await add(path, data)
-      .then((doc) => {
-        console.log('Tarefa adicionada com sucesso!');
-        const data = {
-          id: doc.id,
-          created: new Date(),
-          createdFormated: format(new Date(), 'dd MMMM yyyy', { locale: ptBR }),
-          tarefa: input,
-          userId: user.id,
-          nome: user.nome,
-        };
+      const newTask = {
+        id: addTask.id,
+        created: new Date(),
+        createdFormated: format(new Date(), 'dd MMMM yyyy', { locale: ptBR }),
+        tarefa: input,
+        userId: user.id,
+        nome: user.nome,
+      };
 
-        setTaskList([data, ...taskList]);
-      })
-      .catch((error) => {
-        console.error('Error adding document: ', error);
-      });
-
-    setInput('');
+      setTaskList([newTask, ...taskList]);
+      setInput('');
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
   }
 
   async function handleDelete(id: string) {
@@ -109,7 +106,6 @@ export default function Board({ user, data }: BoardProps) {
 
     await Remove(path, id)
       .then(() => {
-        console.log('Tarefa removida com sucesso!');
         setTaskList(taskList.filter((item) => item.id !== id));
       })
       .catch((error) => {
@@ -240,7 +236,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const tasks = await get('tasks', session?.id) as TaskListServer[];
+  const tasks = (await get('tasks', session?.id)) as TaskListServer[];
 
   if (!tasks) {
     return {

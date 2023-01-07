@@ -2,7 +2,6 @@ import NextAuth from 'next-auth/next';
 import Providers from 'next-auth/providers/github';
 import { getUsers } from '../../../services/firebaseConnection';
 
-
 export default NextAuth({
   providers: [
     Providers({
@@ -42,10 +41,11 @@ export default NextAuth({
       try {
         return true;
       } catch (err) {
-        console.log('Deu erro', err);
+        console.error('Deu erro', err);
 
         return false;
       }
     },
   },
+  secret: process.env.SECRET,
 });

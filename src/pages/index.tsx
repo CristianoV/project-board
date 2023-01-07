@@ -1,15 +1,35 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import style from '../styles/styles.module.scss';
+import { getUsers } from '../services/firebaseConnection';
+import { useState } from 'react';
+import Image from 'next/image';
 
-export default function Home() {
+type User = {
+  id: string;
+  donate: boolean;
+  image: string;
+  lastDonate: Date;
+};
+
+interface HomeProps {
+  data: string;
+}
+
+export default function Home({ data }: HomeProps) {
+  const [donaters, setDonaters] = useState<User[]>(JSON.parse(data));
   return (
     <>
       <Head>
         <title>Board - Organizando suas tarefas.</title>
       </Head>
       <main className={style.contentContainer}>
-        <img src='images/board-user.svg' alt='Board' />
+        <Image
+          src='images/board-user.svg'
+          alt='Board'
+          width={553}
+          height={384}
+        />
         <section className={style.callToAction}>
           <h1>
             Uma ferramenta para o seu dia a dia Escreva, planeje e organize-se..
@@ -20,10 +40,15 @@ export default function Home() {
         </section>
 
         <div className={style.donaters}>
-          <img
-            src='https://avatars.githubusercontent.com/u/12345678?v=4'
-            alt='Ilustração'
-          />
+          {donaters.map((user) => (
+            <Image
+              src={user.image}
+              alt='imagem doador'
+              key={user.id}
+              width={65}
+              height={65}
+            />
+          ))}
         </div>
       </main>
     </>
@@ -31,8 +56,14 @@ export default function Home() {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
+  const users = await getUsers();
+
+  const data = JSON.stringify(users);
+
   return {
-    props: {},
+    props: {
+      data,
+    },
     revalidate: 60 * 60, // 1 hour
   };
-}
+};

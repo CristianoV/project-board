@@ -1,5 +1,7 @@
 import NextAuth from 'next-auth/next';
 import Providers from 'next-auth/providers/github';
+import { getUsers } from '../../../services/firebaseConnection';
+
 
 export default NextAuth({
   providers: [
@@ -9,16 +11,28 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async session({session, token}) {
+    async session({ session, token }: { session: any; token: any }) {
       try {
+        const lastDonate = await getUsers(token.sub).then((snapshot) => {
+          if (snapshot.lastDonate) {
+            return snapshot.lastDonate.toDate();
+          } else {
+            return null;
+          }
+        });
+
         return {
           ...session,
           id: token.sub,
+          vip: lastDonate ? true : false,
+          lastDonate,
         };
       } catch (err) {
         return {
           ...session,
           id: null,
+          vip: false,
+          lastDonate: null,
         };
       }
     },

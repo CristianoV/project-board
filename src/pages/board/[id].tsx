@@ -32,7 +32,7 @@ export default function Task({ data }: TaskListProps) {
       <article className={styles.container}>
         <div className={styles.actions}>
           <div>
-            <FiCalendar size={30} color="#fff" />
+            <FiCalendar size={30} color='#fff' />
             <span>Tarefa criada:</span>
             <time>{task.createdFormated}</time>
           </div>
@@ -43,16 +43,41 @@ export default function Task({ data }: TaskListProps) {
   );
 }
 
+interface Session {
+  user: {
+    name: string;
+    email: string;
+    image: string;
+  };
+  vip: boolean;
+};
+
 export const getServerSideProps: GetServerSideProps = async ({
   req,
-  params: { id },
+  params
 }) => {
-  const session = await getSession({ req });
-  const task = await getOne('tasks', id);
+  const session = await getSession({ req }) as unknown as Session;
 
-  const data = JSON.stringify(task);
+  const { id } = params as { id: string };
 
-  if (!session) {
+  if (!session.vip) {
+    return {
+      redirect: {
+        destination: '/board',
+        permanent: false,
+      },
+    };
+  }
+
+  const data = await getOne('tasks', id)
+    .then((doc) => {
+      return JSON.stringify(doc);
+    })
+    .catch(() => {
+      return {};
+    });
+
+  if (!data) {
     return {
       redirect: {
         destination: '/board',
@@ -63,7 +88,6 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   return {
     props: {
-      session,
       data,
     },
   };

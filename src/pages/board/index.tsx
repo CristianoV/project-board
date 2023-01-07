@@ -19,7 +19,7 @@ import firebase, {
   Remove,
   Edit,
 } from '../../services/firebaseConnection';
-import { format } from 'date-fns';
+import { format, formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import Link from 'next/link';
 
@@ -36,6 +36,8 @@ interface BoardProps {
   user: {
     nome: string;
     id: string;
+    vip: boolean;
+    lastDonate: string | Date;
   };
   data: string;
 }
@@ -169,10 +171,12 @@ export default function Board({ user, data }: BoardProps) {
                     <FiCalendar size={20} color='#ffb800' />
                     <time>{item.createdFormated}</time>
                   </div>
-                  <button onClick={() => handleUpdate(item)}>
-                    <FiEdit2 size={20} color='#fff' />
-                    <span>Editar</span>
-                  </button>
+                  {user.vip && (
+                    <button onClick={() => handleUpdate(item)}>
+                      <FiEdit2 size={20} color='#fff' />
+                      <span>Editar</span>
+                    </button>
+                  )}
                 </div>
                 <button onClick={() => handleDelete(item.id)}>
                   <FiTrash size={20} color='#ff3636' />
@@ -183,21 +187,49 @@ export default function Board({ user, data }: BoardProps) {
         </section>
       </main>
 
-      <div className={styles.vipContainer}>
-        <h3>Obrigado por apoiar esse projeto.</h3>
-        <div>
-          <FiClock size={28} color='#fff' />
-          <time>Última doação foi a 3 dias.</time>
+      {user.vip && (
+        <div className={styles.vipContainer}>
+          <h3>Obrigado por apoiar esse projeto.</h3>
+          <div>
+            <FiClock size={28} color='#fff' />
+            <time>
+              Última doação foi{' '}
+              {formatDistance(new Date(user.lastDonate), new Date(), {
+                locale: ptBR,
+              })}
+            </time>
+          </div>
         </div>
-      </div>
+      )}
 
       <SupportButton />
     </>
   );
 }
 
+interface Session {
+  user: {
+    name: string;
+    email: string;
+    image: string;
+  };
+  expires: string;
+  id: string;
+  vip: boolean;
+  lastDonate: string;
+}
+
+interface TaskListServer {
+  id: string;
+  created: {
+    toDate: () => Date;
+  };
+  tarefa: string;
+  userId: string;
+}
+
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
+  const session = (await getSession({ req })) as unknown as Session;
 
   if (!session?.id) {
     return {
@@ -208,16 +240,20 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const tasks = await get('tasks', session?.id);
+  const tasks = await get('tasks', session?.id) as TaskListServer[];
+
+  if (!tasks) {
+    return {
+      props: { user: session, data: null },
+    };
+  }
 
   const data = JSON.stringify(
     tasks.map((doc) => {
       return {
-        id: doc.id,
         createdFormated: format(doc.created.toDate(), 'dd MMMM yyyy', {
           locale: ptBR,
         }),
-        created: doc.created,
         ...doc,
       };
     })
@@ -226,6 +262,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const user = {
     nome: session?.user?.name,
     id: session?.id,
+    vip: session?.vip,
+    lastDonate: session?.lastDonate,
   };
 
   return {

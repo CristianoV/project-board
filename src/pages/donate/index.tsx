@@ -80,10 +80,6 @@ export default function Donate({ user }: DonatePorps) {
             });
           }}
           onApprove={async (_data, actions) => {
-            const details = await actions.order.capture();
-            console.log(
-              'Transaction completed by ' + details.payer.name.given_name
-            );
             handleSaveDonate();
           }}
         />
@@ -92,8 +88,21 @@ export default function Donate({ user }: DonatePorps) {
   );
 }
 
+interface SessionProps {
+  user: {
+    name: string,
+    email: string,
+    image: string,
+  },
+  expires: string,
+  id: string,
+  vip: boolean,
+  lastDonate: string,
+}
+
+
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
+  const session = await getSession({ req }) as unknown as SessionProps;
 
   if (!session?.id) {
     return {

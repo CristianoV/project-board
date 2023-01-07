@@ -13,6 +13,7 @@ import {
   getFirestore,
   orderBy,
   query,
+  setDoc,
   updateDoc,
   where,
 } from 'firebase/firestore';
@@ -31,9 +32,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export const add = async (path: string, data: Object) => {
+export const add = async (path: string, data: Object, key = 'null') => {
   try {
-    return await addDoc(collection(db, path), data);
+    if (key === 'null') return await addDoc(collection(db, path), data)
+
+    await setDoc(doc(db, path, key), data);
   } catch (error) {
     console.error('Error adding document: ', error);
   }
@@ -52,6 +55,38 @@ export const get = async (path: string, userId: string) => {
     return querySnapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     }, []);
+  } catch (error) {
+    console.error('Error adding document: ', error);
+  }
+};
+
+export const getUsers = async (user = 'null') => {
+  try {
+    if (user !== 'null') {
+      const docRef = doc(db, 'users', user);
+      const docSnap = (await getDoc(docRef)) as {
+        exists: () => any;
+        data: () => any;
+        id: string;
+      };
+
+      return {
+        id: docSnap.id,
+        lastDonate: docSnap.data()?.lastDonate,
+        ...docSnap.data(),
+      };
+    }
+
+    const postQuery = query(collection(db, 'users'));
+    const querySnapshot = await getDocs(postQuery);
+
+    return querySnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        lastDonate: doc.data()?.lastDonate,
+        ...doc.data(),
+      };
+    });
   } catch (error) {
     console.error('Error adding document: ', error);
   }
@@ -95,4 +130,5 @@ export const getOne = async (path: string, id: string) => {
     console.error('Error adding document: ', error);
   }
 };
+
 export default firebase;

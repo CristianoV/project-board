@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center"> 
+Projeto Board
+</h1>
 
-## Getting Started
+## :books: Contexto
+O Project Board simula um site de lista de tarefas onde você pode organizar o seu dia através dele, fazendo o login com a conta do github é possivel cadastrar tarefas que automaticamente são salvas no banco de dados que no momento estou utilizando o Firebase, o site tem varias features e algumas delas só são habilitadas após uma singela doação utilizando o sistema de segurança do Paypal.
+Ele foi desenvolvido com react e Nextjs e por conta disso é super rapido e escalável uma das principais características do React.
 
-First, run the development server:
+[Link do deploy](https://project-board-ten.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
+## :man_technologist: Tecnologias, bibliotecas e arquiteturas usadas
+  * __React__
+  * __Next__
+  * __Typescript__
+  * __Sass__
+  * __Next-auth__
+  * __Firebase__
+  * __React-paypal-js__
+
+
+
+# Instruções da aplicação
+### Instalar dependências
+```
+cd project-board
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Iniciar Projeto em desenvolvimento
+```
+cd project-board
+npm run dev
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Iniciar Projeto em produção
+```
+cd project-board
+npm run build
+npm start
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Autor
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[@CristianoV](https://www.github.com/CristianoV)
+<div>
+  Link: https://project-board-ten.vercel.app/
+</ div>
